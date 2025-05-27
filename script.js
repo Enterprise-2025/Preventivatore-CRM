@@ -5,13 +5,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const procediBtn = document.querySelector(".btn-procedi");
   const defaultMonthlyPriceField = document.getElementById("default-monthly-price");
   const setupFeeField = document.getElementById("setup-fee");
+  const monthlyPriceField = document.getElementById("monthly-price"); // ora richiesto nell'HTML
+  const salesCommissionsField = document.getElementById("sales-commissions");
   const resultsBox = document.getElementById("results");
   const checkSection = document.getElementById("check-section");
   const discountPanel = document.getElementById("discount-panel");
   const discountMessage = document.getElementById("discount-message");
   const discountDate = document.getElementById("discount-date");
-  const monthlyPriceField = document.getElementById("monthly-price");
-  const salesCommissionsField = document.getElementById("sales-commissions");
   const calculatorIcon = document.getElementById("calculator-icon");
   const ctrPanel = document.getElementById("ctr-panel");
   const loadingSpinner = document.getElementById("loading-spinner");
@@ -20,12 +20,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewerCountSpan = document.getElementById("viewer-count");
   const noaInput = document.getElementById("noa");
 
-  // Mostra/Nasconde CTR
+  // Toggle CTR
   calculatorIcon?.addEventListener("click", () => {
     ctrPanel.style.display = ctrPanel.style.display === "none" ? "block" : "none";
   });
 
-  // Calcolo
+  // Calcolo costi
   calculateBtn?.addEventListener("click", () => {
     const rooms = parseInt(document.getElementById("rooms")?.value) || 0;
     const doctors = parseInt(document.getElementById("doctors")?.value) || 0;
@@ -48,10 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const commissionCpl = doctors * (cpl === 17 ? 8 : 6);
     const totalCommission = baseMonthly + commissionCpl + locationCost + noaTotal + setupFee / 12;
 
-    defaultMonthlyPriceField.textContent = `${defaultMonthly.toFixed(2)} €`;
-    setupFeeField.textContent = `${setupFee.toFixed(2)} €`;
-    monthlyPriceField.textContent = `${totalMonthly.toFixed(2)} €`;
-    salesCommissionsField.textContent = `${totalCommission.toFixed(2)} €`;
+    // Visualizza risultati
+    if (defaultMonthlyPriceField) defaultMonthlyPriceField.textContent = `${defaultMonthly.toFixed(2)} €`;
+    if (setupFeeField) setupFeeField.textContent = `${setupFee.toFixed(2)} €`;
+    if (monthlyPriceField) monthlyPriceField.textContent = `${totalMonthly.toFixed(2)} €`;
+    if (salesCommissionsField) salesCommissionsField.textContent = `${totalCommission.toFixed(2)} €`;
 
     resultsBox.style.display = "block";
     discountPanel.style.display = "none";
@@ -64,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     checkBtn.style.display = noa >= 1 ? "inline-block" : "none";
   });
 
-  // Verifica promozioni
+  // Verifica promozione
   checkBtn?.addEventListener("click", () => {
     loadingSpinner.style.display = "block";
     countdown.textContent = "Attendere 15 secondi...";
@@ -91,10 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
         updateViewerCount();
         setInterval(updateViewerCount, 20000);
 
-        // Aggiorna prezzi promozionali
-        const originalMonthly = parseFloat(defaultMonthlyPriceField.textContent.replace(" €", ""));
-        const promoMonthly = parseFloat(monthlyPriceField.textContent.replace(" €", ""));
-        const originalSetup = parseFloat(setupFeeField.textContent.replace(" €", ""));
+        // Prezzi promozionali
+        const originalMonthly = parseFloat(defaultMonthlyPriceField?.textContent.replace(" €", "") || 0);
+        const promoMonthly = parseFloat(monthlyPriceField?.textContent.replace(" €", "") || 0);
+        const originalSetup = parseFloat(setupFeeField?.textContent.replace(" €", "") || 0);
         const promoSetup = originalSetup / 1.5;
 
         document.getElementById("original-monthly-price").textContent = `${originalMonthly.toFixed(2)} €`;
@@ -107,12 +108,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   });
 
-  // Clic sul messaggio sconto
+  // Click su messaggio sconto
   discountMessage?.addEventListener("click", () => {
     discountPanel.scrollIntoView({ behavior: "smooth" });
   });
 
-  // Aggiorna contatore spettatori simulato
+  // Aggiorna numero visitatori finti
   function updateViewerCount() {
     const randomViewers = Math.floor(Math.random() * 5) + 1;
     viewerCountSpan.textContent = randomViewers;
