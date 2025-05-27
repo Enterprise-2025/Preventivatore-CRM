@@ -5,16 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Prezzi per Cliniche | MioDottore</title>
   <link rel="stylesheet" href="style.css" />
-</head>
 
-<script>
-  const refOk = document.referrer.includes("enterprise-2025.github.io") || window.opener;
-  const accesso = localStorage.getItem("accessoMioDottore") === "ok";
-  if (!accesso || !refOk) {
-    document.write("<h2 style='color:red;text-align:center;'>Accesso non autorizzato</h2>");
-    setTimeout(() => location.replace("https://enterprise-2025.github.io/"), 1500);
-  }
-</script>
+  <!-- Controllo accesso -->
+  <script>
+    const isLocal = location.hostname === "localhost";
+    const refOk = document.referrer.includes("enterprise-2025.github.io/Preventivatore-CRM") || window.opener;
+    const accesso = localStorage.getItem("accessoMioDottore") === "ok";
+
+    if (!isLocal && (!accesso || !refOk)) {
+      document.addEventListener("DOMContentLoaded", () => {
+        document.body.innerHTML = "<h2 style='color:red;text-align:center;'>Accesso non autorizzato</h2>";
+        setTimeout(() => {
+          location.replace("https://enterprise-2025.github.io/Preventivatore-CRM/");
+        }, 1500);
+      });
+    }
+  </script>
+</head>
 
 <body>
   <main class="layout">
@@ -112,6 +119,7 @@
     </section>
   </main>
 
+  <!-- JS principale -->
   <script src="script.js"></script>
 </body>
 </html>
