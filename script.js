@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const checkBtn = document.getElementById("check-btn");
   const procediBtn = document.querySelector(".btn-procedi");
   const defaultMonthlyPriceField = document.getElementById("default-monthly-price");
-  const setupFeeField = document.getElementById("setup-fee"); // Questo è il campo della Setup Fee iniziale
+  const setupFeeField = document.getElementById("setup-fee");
   const resultsBox = document.getElementById("results");
   const checkSection = document.getElementById("check-section");
   const discountPanel = document.getElementById("discount-panel");
@@ -40,8 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const pricePerRoomTable = [269, 170, 153, 117, 96, 88, 80, 75, 72, 67, 62];
     const index = rooms >= 11 ? 10 : Math.max(rooms - 1, 0);
 
-    const setupFeeDefault = setupFeeTable[index]; // Questa è la setup fee di default
-    const setupFeeDisplayed = setupFeeDefault * 2; // Questa è la setup fee raddoppiata per la visualizzazione iniziale
+    const setupFeeDefault = setupFeeTable[index];
+    const setupFeeDisplayed = setupFeeDefault * 2;
 
     const monthlyPrice = pricePerRoomTable[index] * rooms;
     const locationsCost = additionalLocations * 99;
@@ -51,19 +51,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const defaultMonthlyPrice = totalMonthlyPrice * 1.25;
 
     const commissionCpl = doctors * (cpl === 17 ? 8 : 6);
-    // Nella commissione CTR si usa la setupFee di default (non raddoppiata) divisa per 12
     const totalCommission = monthlyPrice + commissionCpl + locationsCost + noaTotalPrice + setupFeeDefault / 12;
 
-    // Aggiorna il campo della Setup Fee iniziale con il valore raddoppiato
     setupFeeField.textContent = setupFeeDisplayed.toFixed(2) + " €";
 
     defaultMonthlyPriceField.textContent = defaultMonthlyPrice.toFixed(2) + " €";
     salesCommissionsField.textContent = totalCommission.toFixed(2) + " €";
 
-    // I campi del pannello sconti dovrebbero riflettere la setup fee originale o promozionale (non raddoppiata)
+    // Modified to display the doubled setup fee in the discount panel
     originalMonthlyPriceField.textContent = defaultMonthlyPrice.toFixed(2) + " €";
     promoMonthlyPriceField.textContent = totalMonthlyPrice.toFixed(2) + " €";
-    originalSetupFeeField.textContent = setupFeeDefault.toFixed(2) + " €";
+    originalSetupFeeField.textContent = setupFeeDisplayed.toFixed(2) + " €"; // Changed this line
     promoSetupFeeField.textContent = setupFeeDefault.toFixed(2) + " €";
 
     resultsBox.style.display = "block";
