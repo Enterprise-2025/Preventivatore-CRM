@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Controllo Accesso (Spostato qui per non interferire con il DOM) ---
   const isDev = location.hostname === 'localhost';
-const refOk = isDev || document.referrer.includes("alfpes24.github.io") || window.opener;
+const refOk = isDev || document.referrer.includes("enterprise-2025.github.io") || window.opener;
   const accesso = localStorage.getItem("accessoMioDottore") === "ok";
   const mainContent = document.getElementById("main-content"); 
 
@@ -16,7 +16,7 @@ const refOk = isDev || document.referrer.includes("alfpes24.github.io") || windo
       unauthorizedMessage.textContent = "Accesso non autorizzato";
       document.body.prepend(unauthorizedMessage); 
     }
-    setTimeout(() => location.replace("https://alfpes24.github.io/"), 1500);
+    setTimeout(() => location.replace("https://enterprise-2025.github.io/"), 1500);
     return; 
   }
 
