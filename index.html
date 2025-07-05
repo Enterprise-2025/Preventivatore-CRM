@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Prezzi per Cliniche | MioDottore</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 </head>
 <body>
   <script>
@@ -18,8 +19,7 @@
     // Se l'accesso è valido, non facciamo nulla qui, script.js sarà caricato alla fine del body.
   </script>
 
-  <main class="layout">
-    <section class="promo-section">
+ <main class="layout" id="main-content"> <section class="promo-section">
       <h1>Il paziente al centro,<br>Noa Notes al tuo fianco</h1>
       <p class="description">
         Noa Notes crea un riepilogo dettagliato delle informazioni più importanti scambiate con il paziente durante la visita.
@@ -39,8 +39,14 @@
     <section class="form-section">
       <h2>Calcola il canone per la struttura</h2>
       <form id="calculator-form">
-        <div class="form-group"><label for="rooms">N° Ambulatori</label><input type="number" id="rooms" min="1" required /></div>
-        <div class="form-group"><label for="doctors">N° Dottori</label><input type="number" id="doctors" min="0" required /></div>
+        <div class="form-group">
+          <label for="rooms">N° Ambulatori</label>
+          <input type="number" id="rooms" min="1" value="1" required />
+        </div>
+        <div class="form-group">
+          <label for="doctors">N° Dottori</label>
+          <input type="number" id="doctors" min="5" value="5" required />
+        </div>
         <div class="form-group">
           <label for="cpl">Sede della clinica</label>
           <select id="cpl" required>
@@ -48,8 +54,14 @@
             <option value="13">No Capoluogo (13 €)</option>
           </select>
         </div>
-        <div class="form-group"><label for="additional-locations">Sedi aggiuntive</label><input type="number" id="additional-locations" min="0" required /></div>
-        <div class="form-group"><label for="noa">N° licenze NOA</label><input type="number" id="noa" min="0" required /></div>
+        <div class="form-group">
+          <label for="additional-locations">Sedi aggiuntive</label>
+          <input type="number" id="additional-locations" min="0" value="0" required />
+        </div>
+        <div class="form-group">
+          <label for="noa">N° licenze NOA</label>
+          <input type="number" id="noa" min="0" value="0" required />
+        </div>
         <div class="form-group">
           <label for="noa-price">Prezzo NOA</label>
           <select id="noa-price" required>
@@ -57,25 +69,36 @@
             <option value="39">39 €</option>
           </select>
         </div>
+
+        
+
         <button type="button" id="calculate-btn">Calcola</button>
       </form>
 
       <div id="results" class="results" style="display:none;">
-        <div class="result-group"><label>Canone Mensile Predefinito</label><span id="default-monthly-price">0 €</span></div>
-        <div class="result-group"><label>Setup Fee (una tantum)</label><span id="setup-fee">0 €</span></div>
+        <div class="result-group">
+          <label>Canone Mensile Predefinito</label>
+          <span id="default-monthly-price">0 €</span>
+        </div>
+        <div class="result-group">
+          <label>Setup Fee (una tantum)</label>
+          <span id="setup-fee">0 €</span>
+        </div>
 
         <div class="result-group" id="check-section">
           <div class="check-buttons">
             <button id="check-btn" class="btn-check" style="display:none;">Check Sconti</button>
             <a href="https://apps.docusign.com/send/templates?view=shared&folder=d71d9886-1424-4799-9155-4de52c347f6b" class="btn-procedi" target="_blank" style="display:none;">Procedi</a>
-          </div>
+            </div>
           <div id="loading-spinner" style="display:none;">
             <div class="spinner"></div>
             <div id="countdown"></div>
           </div>
         </div>
 
-        <div class="result-group"><span id="discount-message" class="blinking" style="display:none;"></span></div>
+        <div class="result-group">
+          <span id="discount-message" class="blinking" style="display:none;"></span>
+        </div>
       </div>
 
       <div id="discount-panel" class="discount-panel" style="display:none;">
@@ -94,6 +117,12 @@
           <div id="discount-date" class="blinking-date"></div>
           <a href="https://apps.docusign.com/send/templates?view=shared&folder=d71d9886-1424-4799-9155-4de52c347f6b"
              class="lock-price-btn" target="_blank">Blocca il prezzo</a>
+          
+          <div style="margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <input type="checkbox" id="apply-discount-to-pdf" style="width: auto;">
+            <label for="apply-discount-to-pdf" style="margin-bottom: 0; font-weight: normal; color: var(--text);">Includi sconto nel PDF</label>
+          </div>
+          
         </div>
         <div id="live-viewers" class="live-viewers" style="display:none;">
           <img src="https://cdn-icons-png.flaticon.com/512/709/709586.png" alt="Occhi" />
@@ -108,6 +137,32 @@
     </section>
   </main>
 
+  <aside class="sidebar" id="pdf-sidebar">
+    <button id="generate-pdf-btn" class="btn-generate-pdf">Genera PDF Preventivo</button>
+  </aside>
+
   <script src="script.js"></script>
+
+<div id="pdf-popup" class="popup-overlay" style="display: none;">
+  <div class="popup-box">
+    <h3>Compila i dati prima di generare il PDF</h3>
+    <label>Nome Struttura</label>
+    <input type="text" id="popup-structure-name" data-map="prepared-for" placeholder="Es. Clinica San Paolo" />
+
+    <label>Nome Referente</label>
+    <input type="text" id="popup-referent-name" placeholder="Es. Dott. Rossi" />
+
+    <label>Nome Sale</label>
+    <input type="text" id="popup-sales-name" data-map="prepared-by" placeholder="Es. Alfonso" />
+
+    <div class="popup-buttons">
+      <button id="popup-confirm-btn">Continua</button>
+      <button id="popup-cancel-btn" class="btn-check">Annulla</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
 </body>
 </html>
